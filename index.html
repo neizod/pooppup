@@ -1,0 +1,48 @@
+<div id="app">
+  <div id="question">
+    {{ question }}
+  </div>
+  <div id="answer">
+    {{ answer }}
+  </div>
+  <button v-on:click="poop">ปุ๊บ</button>
+  <button v-on:click="pup">ปั๊บ</button>
+  <button v-on:click="erase">ลบ</button>
+  <button v-on:click="ask">ถามเรย</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+var app = new Vue({
+  el: '#app',
+  data: {
+    direct: { 'poop': 'ปุ๊บ', 'pup': 'ปั๊บ' },
+    invert: { 'poop': 'ปั๊บ', 'pup': 'ปุ๊บ' },
+    question: 'ถาม',
+    answer: 'ตอบ',
+    memo: []
+  },
+  methods: {
+    poop: function() {
+      this.memo.push('poop');
+      this.update();
+    },
+    pup: function() {
+      this.memo.push('pup');
+      this.update();
+    },
+    erase: function() {
+      this.memo.pop();
+      this.update();
+    },
+    update: function() {
+      this.question = this.memo.map(x => this.direct[x]).join(' ');
+      this.answer = 'ตอบ';
+    },
+    ask: function() {
+      this.answer = this.memo.map(x => this.invert[x]).join(' ');
+      this.memo = [];
+    }
+  }
+});
+</script>
