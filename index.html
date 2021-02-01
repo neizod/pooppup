@@ -1,12 +1,52 @@
-<div id="app">
-  <div id="question">
-    ถาม {{ question }}
+<style>
+.container {
+  display: flex;
+}
+
+#app {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  height: 80%;
+}
+
+#buttons {
+  justify-content: center;
+}
+
+.wrapper {
+  margin: .5em;
+  border: #333 dashed 1px;
+}
+
+.textbox {
+  text-align: center;
+  font-size: 125%;
+  padding: 1em;
+}
+
+.word {
+  font-size: 125%;
+  padding: 2em;
+  margin: 1em;
+}
+</style>
+
+<div class="container" id="app">
+  <div class="wrapper">
+    <div class="textbox" id="question">
+      ถาม {{ question }}
+    </div>
   </div>
-  <div id="answer">
-    ตอบ {{ answer }}
+  <div class="wrapper" id="progressbar">
+    <div class="textbox" id="answer">
+      ตอบ {{ answer }}
+    </div>
   </div>
-  <button v-on:click="poop">ปุ๊บ</button>
-  <button v-on:click="pup">ปั๊บ</button>
+  <div class="container" id="buttons">
+    <button class="word" v-on:click="poop">ปุ๊บ</button>
+    <button class="word" v-on:click="pup">ปั๊บ</button>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
@@ -16,8 +56,8 @@ var app = new Vue({
   data: {
     DIRECT: { 'poop': 'ปุ๊บ', 'pup': 'ปั๊บ' },
     INVERT: { 'poop': 'ปั๊บ', 'pup': 'ปุ๊บ' },
-    TIMER: 600,
-    RATE: 30,
+    TIMER: 550,
+    RATE: 15,
     question: '...',
     answer: '...',
     memo: [],
@@ -46,13 +86,27 @@ var app = new Vue({
     loop_countdown: function() {
       if (this.timer > 0) {
         this.id = setTimeout(() => {
-          this.loop_countdown()
           this.timer -= this.RATE;
+          this.progressbar();
+          this.loop_countdown();
         }, this.RATE);
       } else {
         this.ask();
         this.timer = this.TIMER;
       }
+    },
+    progressbar: function() {
+      var css = document.styleSheets[0];
+      if (css.rules[0].selectorText === '#progressbar::after') {
+        css.removeRule(0);
+      }
+      var percent = 100 * Math.min(1, 1 - this.timer / this.TIMER);
+      css.insertRule(`#progressbar::after {
+        border-bottom: #aaa solid 4px;
+        content: '';
+        display: block;
+        width: ${percent}%;
+      }`);
     },
     ask: function() {
       this.answer = this.memo.map(x => this.INVERT[x]).join(' ');
