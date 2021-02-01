@@ -1,14 +1,12 @@
 <div id="app">
   <div id="question">
-    {{ question }}
+    ถาม {{ question }}
   </div>
   <div id="answer">
-    {{ answer }}
+    ตอบ {{ answer }}
   </div>
   <button v-on:click="poop">ปุ๊บ</button>
   <button v-on:click="pup">ปั๊บ</button>
-  <button v-on:click="erase">ลบ</button>
-  <button v-on:click="ask">ถามเรย</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
@@ -16,11 +14,15 @@
 var app = new Vue({
   el: '#app',
   data: {
-    direct: { 'poop': 'ปุ๊บ', 'pup': 'ปั๊บ' },
-    invert: { 'poop': 'ปั๊บ', 'pup': 'ปุ๊บ' },
-    question: 'ถาม',
-    answer: 'ตอบ',
-    memo: []
+    DIRECT: { 'poop': 'ปุ๊บ', 'pup': 'ปั๊บ' },
+    INVERT: { 'poop': 'ปั๊บ', 'pup': 'ปุ๊บ' },
+    TIMER: 600,
+    RATE: 30,
+    question: '...',
+    answer: '...',
+    memo: [],
+    id: null,
+    timer: 0
   },
   methods: {
     poop: function() {
@@ -31,16 +33,29 @@ var app = new Vue({
       this.memo.push('pup');
       this.update();
     },
-    erase: function() {
-      this.memo.pop();
-      this.update();
-    },
     update: function() {
-      this.question = this.memo.map(x => this.direct[x]).join(' ');
-      this.answer = 'ตอบ';
+      this.question = this.memo.map(x => this.DIRECT[x]).join(' ');
+      this.answer = '...';
+      this.start_countdown();
+    },
+    start_countdown: function() {
+      clearTimeout(this.id);
+      this.timer = this.TIMER;
+      this.loop_countdown();
+    },
+    loop_countdown: function() {
+      if (this.timer > 0) {
+        this.id = setTimeout(() => {
+          this.loop_countdown()
+          this.timer -= this.RATE;
+        }, this.RATE);
+      } else {
+        this.ask();
+        this.timer = this.TIMER;
+      }
     },
     ask: function() {
-      this.answer = this.memo.map(x => this.invert[x]).join(' ');
+      this.answer = this.memo.map(x => this.INVERT[x]).join(' ');
       this.memo = [];
     }
   }
